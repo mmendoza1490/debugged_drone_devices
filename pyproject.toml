@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "debugged-drone-devices"
+version = "0.1.0"
+description = "debugged new devices get by drone sdk"
+authors = ["Melvin Mendoza"]
+readme = "README.md"
+packages = [{include = "debugged_drone_devices"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+asyncpg = "^0.27.0"
+pandas = "^1.5.3"
+smpplib = "^2.2.2"
+python-dotenv = "^1.0.0"
+asyncio = "^3.4.3"
+psycopg2-binary = "^2.9.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
