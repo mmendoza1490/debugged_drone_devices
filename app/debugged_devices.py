@@ -58,12 +58,12 @@ def count_key_debugged_devices(report_id) -> bool:
 
         query, params = build_query_by_args(report_type.value["count"], report_payload)
 
-        total = await connection.fetchval(query, *params)
+        total = await connection.fetch(query, *params)
 
         return total
 
     try:
-        return {"Total to debugged": asyncio.run(async_work())}
+        return {"Total_debugged": asyncio.run(async_work())}
     except Exception as error:
         raise Exception(error)
 

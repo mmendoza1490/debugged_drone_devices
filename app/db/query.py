@@ -16,7 +16,8 @@ set_debugged_devices = """
         WHERE BD.updatedat is not null
             AND NOT EXISTS (SELECT 1 FROM public.oem WHERE pruned_id=BD.id_brand)
             AND cte.androidid is  null
-            AND BD.androidid='de4581c0558c50f'
+            AND CASE WHEN BD.report -> :str_report_id @> :new_status
+            THEN FALSE ELSE TRUE END
     )
     UPDATE clean_brand_data CBD
     SET report = CASE
@@ -48,7 +49,9 @@ debbuged_devices = """
 """
 
 count_debugged_devices = """
-SELECT DISTINCT count(androidid)
+SELECT (SELECT oem_role FROM public.oem WHERE id=T.id_brand) AS brand,total
+FROM (
+    SELECT DISTINCT id_brand, count(androidid) as total
     FROM clean_brand_data BD
     INNER JOIN cota_mcc_mnc cmm ON
                 BD.mcc = cmm.mcc
@@ -56,4 +59,6 @@ SELECT DISTINCT count(androidid)
     WHERE BD.updatedat is not null
         AND NOT EXISTS (SELECT 1 FROM public.oem WHERE pruned_id=BD.id_brand)
         AND BD.report -> :str_report_id @> :new_status
+    GROUP BY id_brand
+) T
 """
