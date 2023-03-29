@@ -1,4 +1,4 @@
-from app.utils.debugged_devices import new_key_debugged_devices, debugged_devices, count_key_debugged_devices
+from app.debugged_devices import new_key_debugged_devices, debugged_devices, count_key_debugged_devices
 import asyncio
 from datetime import datetime as dt
 

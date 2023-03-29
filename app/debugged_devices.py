@@ -1,6 +1,6 @@
 import asyncio
-from app.connections.connect import connect
-from app.connections.query import (
+from app.db.connections.connect import connect
+from app.db.query import (
     set_debugged_devices,
     debbuged_devices,
     count_debugged_devices,
