@@ -1,11 +1,10 @@
-try:
-    import os
-    import json
-    import smpplib.client
-    import smpplib.consts
-    import smpplib.gsm
-except Exception as err:
-    print ("Error some Modules are missing : {}".format(err))
+
+import os
+import json
+import smpplib.client
+import smpplib.consts
+import smpplib.gsm
+
 
 SMSC_IP = os.getenv("SMSC_IP")
 SMSC_PORT = os.getenv("SMSC_PORT")

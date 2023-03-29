@@ -5,8 +5,11 @@ from datetime import datetime as dt
 from app.notifications.teams import send_by_team
 from app.notifications.smsc import send_sms_by_smpp
 from dotenv import load_dotenv
+from app.utils.logger.log_config import get_logger
 
 load_dotenv(override=True)
+
+logger = get_logger(__name__)
 
 enviroment = os.getenv("enviroment")
 
@@ -55,37 +58,41 @@ def debugged_start():
 
     notification["set_new_key"]["started"] = True
     if new_key_debugged_devices(report_id=report_id):
-        print(f"new_key_debugged_devices finished {dt.now()}")
+        logger.debug(f"new_key_debugged_devices finished successfully")
         notification["set_new_key"]["finished"] = True
 
         notification["count_new_key"]["started"] = True
         count_debugged = count_key_debugged_devices(report_id=report_id)
-        print(f"count_debugged: {count_debugged}")
-        print(f"count_key_debugged_devices finished {dt.now()}")
+        logger.debug(f"count_debugged: {count_debugged}")
+        logger.debug(f"count_key_debugged_devices finished successfully")
         notification["count_new_key"]["finished"] = True
 
         notification["debugged_devices"]["started"] = True
         if debugged_devices(report_id=report_id):
-            print(f"debugged_devices finished {dt.now()}")
+            logger.debug(f"debugged_devices finished successfully")
             notification["debugged_devices"]["finished"] = True
 
     return count_debugged
 
-print(f"start debugging {dt.now()}")
+logger.debug(f"start debugging")
 try:
     count_result = debugged_start()
     result = {row["brand"]: row["total"] for row in count_result["Total_debugged"]}
 
     if result:
+        logger.info(result)
         msg = str(notification["debugged_successful"]["msg"]).format(result, enviroment)
     else:
         msg = str(notification["debugged_empty"]["msg"]).format(enviroment)
         
     # send notification
+    logger.debug("sending notification...")
     send_by_team(message=msg)
     send_sms_by_smpp(text=msg)
+    logger.debug("notification sent successfuly...")
 
 except Exception as error:
+    logger.debug(error)
     for key, value in notification.items():
         if value["finished"] == False and value["started"] == True:
             msg = str(notification[key]["msg"]).format(report_id, error, enviroment)
@@ -93,5 +100,5 @@ except Exception as error:
             send_sms_by_smpp(text=msg)
             break
 
-print(f"Ended debugging {dt.now()}")
+logger.debug(f"Ended debugging")
 
