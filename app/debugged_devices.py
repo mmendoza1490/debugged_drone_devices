@@ -4,6 +4,7 @@ from app.db.query import (
     set_debugged_devices,
     debbuged_devices,
     count_debugged_devices,
+    check_devices_archived,
 )
 from app.utils.build_query_by_args import build_query_by_args
 from enum import Enum
@@ -14,9 +15,10 @@ class ReportReference(Enum):
     DRONE_DEVICES = {
         "id": 7,
         "total": int(),
-        "count": count_debugged_devices,
-        "update": debbuged_devices,
         "new_key": set_debugged_devices,
+        "count": count_debugged_devices,
+        "debugged": debbuged_devices,
+        "archived": check_devices_archived,
     }
 
 def new_key_debugged_devices(report_id) -> bool:
@@ -68,7 +70,7 @@ def count_key_debugged_devices(report_id) -> bool:
         raise Exception(error)
 
 
-def debugged_devices(report_id) -> bool:
+def debugged_devices(report_id, key) -> bool:
     async def async_work():
         connection = await connect()
 
@@ -79,7 +81,7 @@ def debugged_devices(report_id) -> bool:
             "str_report_id": str(report_id),
         }
 
-        query, params = build_query_by_args(report_type.value["update"], report_payload)
+        query, params = build_query_by_args(report_type.value[key], report_payload)
 
         await connection.execute(query, *params)
 

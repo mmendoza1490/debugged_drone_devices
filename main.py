@@ -43,6 +43,13 @@ notification = {
         Debugged drone devices successful, \n
         Result: {0}"""
     },
+    "archived_successful":{
+        "started": False,
+        "finished": False,
+        "msg": """Enviroment: {1}\n
+        Archived in table devicedata2 successful, \n
+        Result: {0}"""
+    },
     "debugged_empty":{
         "started": False,
         "finished": False,
@@ -68,9 +75,14 @@ def debugged_start():
         notification["count_new_key"]["finished"] = True
 
         notification["debugged_devices"]["started"] = True
-        if debugged_devices(report_id=report_id):
+        if debugged_devices(report_id=report_id, key="debugged"):
             logger.debug(f"debugged_devices finished successfully")
             notification["debugged_devices"]["finished"] = True
+
+            notification["archived_successful"]["started"] = True
+            if debugged_devices(report_id=report_id, key="archived"):
+                logger.debug(f"archived_successful finished successfully")
+                notification["archived_successful"]["finished"] = True
 
     return count_debugged
 
