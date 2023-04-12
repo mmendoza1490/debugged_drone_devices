@@ -83,3 +83,7 @@ check_devices_archived = """
     WHERE p.id_brand = d.brand_id
     AND p.androidid = d.androidid;
 """
+
+refresh_count_dasboard = """
+    REFRESH MATERIALIZED VIEW analytics.brand_data_counts;
+"""

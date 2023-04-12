@@ -1,5 +1,10 @@
 import os
-from app.debugged_devices import new_key_debugged_devices, debugged_devices, count_key_debugged_devices
+from app.debugged_devices import (
+    new_key_debugged_devices,
+    debugged_devices,
+    count_key_debugged_devices,
+)
+from app.update_view_stadistics import refresh_view_count
 import asyncio
 from datetime import datetime as dt
 from app.notifications.teams import send_by_team
@@ -23,7 +28,8 @@ notification = {
     "count_new_key":{
         "started": False,
         "finished": False,
-        "msg": """Enviroment: {2}\n Error when trying count the new key '{0}',
+        "msg": """Enviroment: {2}\n
+        Error trying count the new key '{0}',
         urgent to verify right now because devices were
         set with de new key but were not debugged\n
         Error:{1}"""
@@ -32,8 +38,24 @@ notification = {
         "started": False,
         "finished": False,
         "msg": """Enviroment: {2}\n
-        Error when trying debugged drone devices with key '{0}', 
+        Error trying debugged drone devices with key '{0}', 
         urgent to verify right now because devices were set with de new key but were not debugged\n
+        Error: {1}"""
+    },
+    "archived_successful":{
+        "started": False,
+        "finished": False,
+        "msg": """Enviroment: {2}\n
+        error trying to mark debugged devices in devicedata2 table - key '{0}',
+        in the next execution it will try to dial again \n
+        Error: {1}"""
+    },
+    "refresh_view_successful":{
+        "started": False,
+        "finished": False,
+        "msg": """Enviroment: {2}\n
+        Error trying to refresh view to the dashboard,
+        you can execute manually.\n
         Error: {1}"""
     },
     "debugged_successful":{
@@ -41,13 +63,6 @@ notification = {
         "finished": False,
         "msg": """Enviroment: {1}\n
         Debugged drone devices successful, \n
-        Result: {0}"""
-    },
-    "archived_successful":{
-        "started": False,
-        "finished": False,
-        "msg": """Enviroment: {1}\n
-        Archived in table devicedata2 successful, \n
         Result: {0}"""
     },
     "debugged_empty":{
@@ -83,6 +98,11 @@ def debugged_start():
             if debugged_devices(report_id=report_id, key="archived"):
                 logger.debug(f"archived_successful finished successfully")
                 notification["archived_successful"]["finished"] = True
+
+                notification["refresh_view_successful"]["started"] = True
+                if refresh_view_count():
+                    logger.debug(f"refresh_view_successful finished successfully")
+                    notification["refresh_view_successful"]["finished"] = True
 
     return count_debugged
 
