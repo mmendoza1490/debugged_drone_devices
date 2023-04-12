@@ -13,8 +13,7 @@ set_debugged_devices = """
                 9990082)
         ) cte
         ON(BD.androidid = cte.androidid)
-        WHERE BD.updatedat is not null
-            AND cte.androidid is  null
+        WHERE cte.androidid is  null
             AND (DR.is_archived is null OR not DR.is_archived)
             AND CASE WHEN BD.report -> :str_report_id @> :new_status
             THEN FALSE ELSE TRUE END
@@ -28,7 +27,6 @@ set_debugged_devices = """
     FROM debugged_devices devices
     WHERE CBD.androidid=devices.androidid
     AND CBD.id_brand=devices.id_brand
-    AND CBD.mcc=devices.mcc
 """
 
 # Update Debugged devices to sent a new partition
@@ -46,7 +44,6 @@ debbuged_devices = """
     FROM pre_data as p
     where BD.id_brand = p.id_brand
     AND BD.androidid = p.androidid
-    AND BD.updatedat is not null
     AND BD.report -> :str_report_id @> :new_status;
 """
 
@@ -59,7 +56,6 @@ FROM (
         ON (BD.androidid = DR.androidid 
             AND BD.id_brand= DR.brand_id)
     WHERE (DR.is_archived is null OR not DR.is_archived)
-        AND BD.updatedat is not null
         AND NOT EXISTS (SELECT 1 FROM public.oem WHERE pruned_id=BD.id_brand)
         AND BD.report -> :str_report_id @> :new_status
     GROUP BY BD.id_brand
